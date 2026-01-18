@@ -1,42 +1,47 @@
-RAGOps Platform – Core RAG Engine
-Overview
+# RAGOps Platform – Core RAG Engine
+## Overview
 
 RAGOps Platform is a Retrieval-Augmented Generation (RAG) based document intelligence system designed to analyze PDF documents and generate grounded insights using Large Language Models (LLMs). The system combines semantic retrieval with controlled generation to ensure accurate, context-aware outputs.
 
 This repository currently contains the core RAG engine, which will later be extended with containerization, CI/CD, and Kubernetes-based deployment.
-Key Features (Current Stage)
 
-PDF document ingestion and text extraction
+## Key Features (Current Stage)
 
-Text chunking and semantic embedding generation
+- PDF document ingestion and text extraction
 
-Vector storage with cosine similarity search
+- Text chunking and semantic embedding generation
 
-Retrieval-Augmented Generation (RAG) pipeline
+- Vector storage with cosine similarity search
 
-Context-restricted LLM-based insight generation
-REST APIs using FastAPI
-RAG Architecture
+- Retrieval-Augmented Generation (RAG) pipeline
+
+- Context-restricted LLM-based insight generation
+
+- REST APIs using FastAPI
+
+- RAG Architecture
 
 The system follows a standard Retrieval-Augmented Generation workflow:
+
 PDF → Text Extraction → Chunking → Embeddings
     → Vector Store → Semantic Retrieval
     → Context-Aware LLM Generation
-Technologies Used
 
-Python 3
+## Technologies Used
 
-FastAPI
+- Python 3
 
-Sentence Transformers
+- FastAPI
 
-Google Gemini LLM
+- Sentence Transformers
 
-Vector Similarity Search (Cosine Similarity)
+- Google Gemini LLM
 
-SQLite-based Vector Store
+- Vector Similarity Search (Cosine Similarity)
 
-PyPDF2
+- SQLite-based Vector Store
+
+- PyPDF2
 
 ## Project Structure (Current)
 
