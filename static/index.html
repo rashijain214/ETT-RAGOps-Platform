@@ -27,6 +27,24 @@
             --radius: 6px;
         }
 
+        /* Light theme */
+        [data-theme="light"] {
+            --bg: #ffffff;
+            --surface: #f8f9fa;
+            --surface2: #e9ecef;
+            --border: #dee2e6;
+            --border-bright: #ced4da;
+            --accent: #ff6b35;
+            --accent-dim: rgba(255,107,53,0.1);
+            --accent-glow: rgba(255,107,53,0.2);
+            --red: #e91e63;
+            --red-dim: rgba(233,30,99,0.1);
+            --blue: #6366f1;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --text-soft: #495057;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -48,6 +66,50 @@
             background-size: 40px 40px;
             pointer-events: none;
             z-index: 0;
+        }
+
+        [data-theme="light"] body::before {
+            background-image:
+                linear-gradient(rgba(255,107,53,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,107,53,0.03) 1px, transparent 1px);
+        }
+
+        /* Theme switcher */
+        .theme-switcher {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-switcher:hover {
+            border-color: var(--accent);
+        }
+
+        .theme-switcher::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: var(--text);
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        [data-theme="light"] .theme-switcher::after {
+            transform: translateX(20px);
+        }
+
+        .theme-switcher-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-right: 8px;
         }
 
         .shell {
@@ -588,6 +650,11 @@
         <div class="status-bar">
             <div class="status-dot"></div>
             API Connected &nbsp;·&nbsp; Test Interface v1.0
+            <span style="margin-left: 16px; display: flex; align-items: center;">
+                <span class="theme-switcher-label">🌙</span>
+                <div class="theme-switcher" onclick="toggleTheme()" title="Toggle theme"></div>
+                <span class="theme-switcher-label" style="margin-left: 8px;">☀️</span>
+            </span>
         </div>
     </header>
 
@@ -702,6 +769,33 @@
 
 <script>
     const API_BASE = '/api';
+
+    // ── Theme Management ──
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeLabels(savedTheme);
+    }
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeLabels(newTheme);
+    }
+
+    function updateThemeLabels(theme) {
+        const labels = document.querySelectorAll('.theme-switcher-label');
+        if (labels.length >= 2) {
+            labels[0].style.opacity = theme === 'dark' ? '1' : '0.3';
+            labels[1].style.opacity = theme === 'light' ? '1' : '0.3';
+        }
+    }
+
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', initTheme);
 
     // ── Drag-and-drop zone ──
     const dropZone = document.getElementById('dropZone');
