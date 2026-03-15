@@ -1,9 +1,13 @@
 # RAGOps Platform – Core RAG Engine
 ## Overview
 
-RAGOps Platform is a Retrieval-Augmented Generation (RAG) based document intelligence system designed to analyze PDF documents and generate grounded insights using Large Language Models (LLMs). The system combines semantic retrieval with controlled generation to ensure accurate, context-aware outputs.
+RAGOps Platform is a Retrieval-Augmented Generation (RAG) based document intelligence system designed to analyze unstructured PDF documents and generate context-grounded insights using Large Language Models (LLMs).
 
-This repository currently contains the core RAG engine, which will later be extended with containerization, CI/CD, and Kubernetes-based deployment.
+The platform combines semantic retrieval with controlled generation, ensuring that responses are derived strictly from relevant document context instead of hallucinated model knowledge.
+
+This repository currently contains the core RAG engine, responsible for document ingestion, vector indexing, semantic retrieval, and insight generation.
+
+Future iterations will extend the system with containerization, CI/CD pipelines, scalable vector databases, and Kubernetes-based deployment.
 
 ## Key Features (Current Stage)
 
