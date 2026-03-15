@@ -13,6 +13,7 @@ Future iterations will extend the system with containerization, CI/CD pipelines,
 
 The platform follows a Retrieval-Augmented Generation (RAG) pipeline to ensure accurate and context-aware responses.
 
+```
 PDF Document
      │
      ▼
@@ -35,18 +36,19 @@ Context Injection
      │
      ▼
 LLM Insight Generation (Google Gemini)
+```
 
 ### Core Concept
 
 Instead of sending entire documents to an LLM:
 
-Documents are divided into semantic chunks
+1. Documents are divided into semantic chunks
 
-Each chunk is converted into a vector embedding
+2. Each chunk is converted into a vector embedding
+ 
+3. The system retrieves relevant chunks using semantic similarity
 
-The system retrieves relevant chunks using semantic similarity
-
-Only these chunks are given to the LLM as context
+4. Only these chunks are given to the LLM as context
 
 This approach significantly reduces hallucination and improves response accuracy.
 
@@ -103,11 +105,13 @@ Embeddings are stored in a SQLite-based vector store, enabling efficient similar
 
 Each stored entry includes:
 
+```
 chunk_id
 document_id
 text_chunk
 embedding_vector
 metadata
+```
 
 Similarity search is performed using cosine similarity.
 
@@ -154,27 +158,33 @@ The system exposes its functionality through a FastAPI-based REST API.
 
 Example Endpoints
 Upload and Process Documents
+```
 POST /ingest
+```
 
 Uploads a PDF and processes it through the ingestion pipeline.
 
 Query the System
+```
 POST /query
+```
 
 Allows users to ask questions about indexed documents.
 
 List Documents
+```
 GET /documents
+```
 
 Returns all ingested documents.
 
 FastAPI provides:
 
-high performance
+- high performance
 
-asynchronous request handling
+- asynchronous request handling
 
-automatic API documentation
+- automatic API documentation
 
 ## Technology Stack
 ### Core Technologies
@@ -267,47 +277,31 @@ The long-term goal is to evolve RAGOps into a scalable document intelligence pla
 
 Planned improvements include:
 
-Infrastructure
+1. Infrastructure
 
-Docker containerization
+2. Docker containerization
 
-Kubernetes deployment
+3. Kubernetes deployment
 
-CI/CD pipelines
+4. CI/CD pipelines
 
-Vector Databases
+5. Vector Databases
 
-Replace SQLite with scalable vector databases such as:
+6.  Replace SQLite with scalable vector databases
+7. Retrieval Improvements
 
-Pinecone
+- hybrid search (BM25 + vector search)
 
-Weaviate
+- reranking models
 
-Milvus
+- query expansion
 
-Retrieval Improvements
+8. Document Processing
 
-hybrid search (BM25 + vector search)
 
-reranking models
 
-query expansion
+9. Observability
 
-Document Processing
-
-OCR for scanned PDFs
-
-table extraction
-
-multi-document reasoning
-
-Observability
-
-retrieval quality metrics
-
-hallucination monitoring
-
-query tracing
 
 ### Running the Project
 Install Dependencies
