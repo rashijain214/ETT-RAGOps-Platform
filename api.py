@@ -1,5 +1,5 @@
-from fastapi import APIRouter, UploadFile, File
-from pydantic import BaseModel
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from pydantic import BaseModel, Field
 from typing import List
 import os
 import uuid
@@ -8,14 +8,16 @@ from insights import generate_insights
 from ingest import ingest_document, extract_text_from_pdf
 from embeddings import get_embedding
 from retrieve import search
-from rag_store import open_store
+from rag_store import open_store, delete_document_chunks
 
 router = APIRouter()
-
 
 class HighlightRequest(BaseModel):
     highlight: str
 
+class SearchRequest(BaseModel):
+    highlight: str
+    top_k: int = Field(default=5, ge=1, le=50)
 
 class InsightsResponse(BaseModel):
     key_takeaways: List[str]
@@ -24,11 +26,9 @@ class InsightsResponse(BaseModel):
     examples: List[str]
     inspirations: List[str]
 
-
 @router.post("/rag/insights", response_model=InsightsResponse)
 async def get_insights(req: HighlightRequest):
     result = generate_insights(req.highlight)
-
     return {
         "key_takeaways": result.get("key_takeaways", []),
         "did_you_know": result.get("did_you_know", []),
@@ -37,14 +37,15 @@ async def get_insights(req: HighlightRequest):
         "inspirations": result.get("inspirations", [])
     }
 
-
 @router.post("/rag/search_snippets")
-async def search_snippets(req: HighlightRequest):
+async def search_snippets(req: SearchRequest):
+    """
+    Configurable top_k search.
+    NOTE: retrieve.search must accept top_k and use it.
+    """
     query_emb = get_embedding(req.highlight)
-    results = search(req.highlight, query_emb, top_k=5)
-
+    results = search(req.highlight, query_emb, top_k=req.top_k)
     return {"results": results}
-
 
 @router.post("/rag/ingest_pdfs")
 async def ingest_pdfs(files: List[UploadFile] = File(...)):
@@ -64,10 +65,7 @@ async def ingest_pdfs(files: List[UploadFile] = File(...)):
         chunks = ingest_document(file.filename, text)
 
         total_chunks += chunks
-        uploaded_files.append({
-            "filename": file.filename,
-            "chunks": chunks
-        })
+        uploaded_files.append({"filename": file.filename, "chunks": chunks})
 
         os.remove(file_path)
 
@@ -77,22 +75,30 @@ async def ingest_pdfs(files: List[UploadFile] = File(...)):
         "total_chunks": total_chunks
     }
 
-
 @router.get("/rag/list_documents")
 async def list_documents():
-    """List all documents in the database with their chunk counts."""
+    """List all documents with their chunk counts."""
     store = open_store()
     doc_counts = {}
-    
-    for key, entry in store.items():
+
+    for _, entry in store.items():
         doc_name = entry.get("metadata", {}).get("doc", "Unknown")
         doc_counts[doc_name] = doc_counts.get(doc_name, 0) + 1
-    
+
     store.close()
-    
+
     documents = [{"name": name, "chunks": count} for name, count in doc_counts.items()]
     return {"documents": documents, "total_documents": len(documents)}
 
+@router.delete("/rag/documents/{doc_name}")
+async def delete_document(doc_name: str):
+    """
+    Delete all chunks for a document by matching metadata.doc == doc_name.
+    """
+    stats = delete_document_chunks(doc_name)
+    if stats["deleted_chunks"] == 0:
+        raise HTTPException(status_code=404, detail=f"No chunks found for document: {doc_name}")
+    return {"message": f"Deleted '{doc_name}' ({stats['deleted_chunks']} chunks)", **stats}
 
 @router.delete("/rag/clear_database")
 async def clear_database():
