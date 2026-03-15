@@ -304,9 +304,15 @@ Planned improvements include:
 
 
 ### Running the Project
-Install Dependencies
+- Install Dependencies
+```
 pip install -r requirements.txt
-Start the API Server
+```
+- Start the API Server
+ ```
 uvicorn api:app --reload
-Open API Documentation
+```
+- Open API Documentation
+```
 http://localhost:8000/docs
+```
